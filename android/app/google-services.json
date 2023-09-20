@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "818416764795",
+    "project_id": "image-recognition-app-72e39",
+    "storage_bucket": "image-recognition-app-72e39.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:818416764795:android:98885883860b619fdd9fde",
+        "android_client_info": {
+          "package_name": "com.example.image_recognition_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7kzO4q_apL-CDKAyGR9bZqg6ZAPDHZSY"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
