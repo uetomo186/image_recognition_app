@@ -1,40 +1,65 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:firebase_storage/firebase_storage.dart';
+import 'package:image_recognition_app/firebase_options.dart';
 
-void main() {
+void main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   runApp(const MyApp());
 }
 
 class MyApp extends StatelessWidget {
   const MyApp({super.key});
 
-  // This widget is the root of your application.
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
-      title: 'Flutter Demo',
+      title: 'Image Upload',
       theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
+        primarySwatch: Colors.blue,
       ),
-      home: const MyHomePage(title: 'Flutter Demo Home Page'),
+      home: const ImageUploadScreen(),
     );
   }
 }
 
-class MyHomePage extends StatefulWidget {
-  const MyHomePage({super.key, required this.title});
-  final String title;
+class ImageUploadScreen extends StatefulWidget {
+  const ImageUploadScreen({super.key});
 
   @override
-  State<MyHomePage> createState() => _MyHomePageState();
+  _ImageUploadScreenState createState() => _ImageUploadScreenState();
 }
 
-class _MyHomePageState extends State<MyHomePage> {
-  int _counter = 0;
+class _ImageUploadScreenState extends State<ImageUploadScreen> {
+  File? _image;
+  final picker = ImagePicker();
 
-  void _incrementCounter() {
+  Future getImage() async {
+    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+
     setState(() {
-      _counter++;
+      if (pickedFile != null) {
+        _image = File(pickedFile.path);
+      } else {
+        print('No image selected.');
+      }
+    });
+  }
+
+  Future uploadImageToFirebase(BuildContext context) async {
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child("画像/$fileName");
+    UploadTask uploadTask = ref.putFile(_image!);
+    await uploadTask.whenComplete(() {
+      debugPrint('ファイルがアップロードされました');
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('ファイルをアップロードできました')));
     });
   }
 
@@ -42,27 +67,23 @@ class _MyHomePageState extends State<MyHomePage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Theme.of(context).colorScheme.inversePrimary,
-        title: Text(widget.title),
+        title: const Text('画像のアップロード'),
       ),
       body: Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: <Widget>[
-            const Text(
-              'You have pushed the button this many times:',
+            _image == null ? const Text('画像が選択されていません') : Image.file(_image!),
+            ElevatedButton(
+              onPressed: getImage,
+              child: const Text('画像を選択'),
             ),
-            Text(
-              '$_counter',
-              style: Theme.of(context).textTheme.headlineMedium,
+            ElevatedButton(
+              child: const Text('Firebaseにアップロードする'),
+              onPressed: () => uploadImageToFirebase(context),
             ),
           ],
         ),
-      ),
-      floatingActionButton: FloatingActionButton(
-        onPressed: _incrementCounter,
-        tooltip: 'Increment',
-        child: const Icon(Icons.add),
       ),
     );
   }
