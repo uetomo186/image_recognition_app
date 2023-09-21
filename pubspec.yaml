@@ -13,11 +13,17 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
+    # Riverpod
+  flutter_hooks:
+  hooks_riverpod:
+  # Firebase
+
   image_picker: ^0.8.4+4
   cupertino_icons: ^1.0.2
   firebase_core: 
   firebase_storage:
-  firebase_ml_vision:
+  google_ml_kit:
+  flutter_svg:
 
 dev_dependencies:
   flutter_test: 
@@ -27,6 +33,9 @@ dev_dependencies:
   flutter_lints: ^2.0.0
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/
 
   # To add assets to your application, add an assets section, like this:
   # assets:
