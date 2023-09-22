@@ -1,4 +1,5 @@
 import 'dart:io';
+import 'package:firebase_storage/firebase_storage.dart';
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_commons/google_mlkit_commons.dart';
 import 'package:image_picker/image_picker.dart';
@@ -27,7 +28,10 @@ class _CameraViewState extends State<CameraView> {
   @override
   Widget build(BuildContext context) {
     _imagePicker = ImagePicker();
-    return _galleryBody();
+    return Scaffold(
+      appBar: AppBar(title: const Text('俺ちゃん！')),
+      body: _galleryBody(),
+    );
   }
 
   Widget _galleryBody() {
@@ -45,9 +49,13 @@ class _CameraViewState extends State<CameraView> {
       Padding(
         padding: const EdgeInsets.symmetric(horizontal: 16),
         child: ElevatedButton(
-          child: const Text('From Gallery'),
+          child: const Text('写真を選択する'),
           onPressed: () => _getImage(ImageSource.gallery),
         ),
+      ),
+      ElevatedButton(
+        child: const Text('Firebaseにアップロードする'),
+        onPressed: () => uploadImageToFirebase(context),
       ),
       if (_image != null)
         Padding(
@@ -57,6 +65,18 @@ class _CameraViewState extends State<CameraView> {
           child: Text('${_path == null ? '' : ''}\n\n${widget.text ?? ''}'),
         ),
     ]);
+  }
+
+  Future uploadImageToFirebase(BuildContext context) async {
+    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+    FirebaseStorage storage = FirebaseStorage.instance;
+    Reference ref = storage.ref().child('uploads/$fileName');
+    UploadTask uploadTask = ref.putFile(_image!);
+    await uploadTask.whenComplete(() {
+      debugPrint('ファイルがアップロードされました');
+      ScaffoldMessenger.of(context)
+          .showSnackBar(const SnackBar(content: Text('ファイルをアップロードできました')));
+    });
   }
 
   // ④写真フォルダから画像を取得するための関数
