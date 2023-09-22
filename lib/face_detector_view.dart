@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
-import 'package:image_recognition_app/camera_view.dart';
+import 'package:image_recognition_app/photo/camera_view.dart';
 
 class FaceDetectorView extends StatefulWidget {
   const FaceDetectorView({super.key});
