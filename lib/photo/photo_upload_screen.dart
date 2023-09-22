@@ -14,10 +14,10 @@ class ImageUploadScreen extends StatefulWidget {
   const ImageUploadScreen({super.key});
 
   @override
-  _ImageUploadScreenState createState() => _ImageUploadScreenState();
+  ImageUploadScreenState createState() => ImageUploadScreenState();
 }
 
-class _ImageUploadScreenState extends State<ImageUploadScreen> {
+class ImageUploadScreenState extends State<ImageUploadScreen> {
   File? _image;
   final picker = ImagePicker();
 
