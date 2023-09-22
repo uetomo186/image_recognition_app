@@ -59,7 +59,7 @@ class HomePage extends HookConsumerWidget {
               const Divider(height: 1),
               ListTile(
                 title: const Text(
-                  'フォルダを新規作成',
+                  '画像を認識する',
                 ),
                 onTap: () {
                   Navigator.push(
