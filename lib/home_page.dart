@@ -39,6 +39,9 @@ class HomePage extends HookConsumerWidget {
                       )),
                 ],
               ),
+              const SizedBox(
+                height: 10,
+              ),
               const Divider(height: 1),
               ListTile(
                 title: const Text(
