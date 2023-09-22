@@ -24,6 +24,7 @@ dependencies:
   firebase_storage:
   google_ml_kit:
   flutter_svg:
+  file_picker:
 
 dev_dependencies:
   flutter_test: 
