@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_recognition_app/photo/camera_view.dart';
 import 'package:image_recognition_app/photo/photo_upload_screen.dart';
 
 class HomePage extends HookConsumerWidget {
@@ -52,6 +54,20 @@ class HomePage extends HookConsumerWidget {
                       context,
                       MaterialPageRoute(
                           builder: (context) => const ImageUploadScreen()));
+                },
+              ),
+              const Divider(height: 1),
+              ListTile(
+                title: const Text(
+                  'フォルダを新規作成',
+                ),
+                onTap: () {
+                  Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                          builder: (context) => CameraView(
+                                onImage: (InputImage inputImage) {},
+                              )));
                 },
               ),
               const Divider(height: 1),
