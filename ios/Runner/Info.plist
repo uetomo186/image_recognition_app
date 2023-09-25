@@ -8,6 +8,8 @@
 	<string>写真はアプリ内で利用します。</string>
 	<key>NSCameraUsageDescription</key>
 	<string>写真はアプリ内で利用します。</string>
+	<key>NSMicrophoneUsageDescription</key>
+	<string>写真はアプリ内で利用します。</string>
 	<key>CFBundleDevelopmentRegion</key>
 	<string>$(DEVELOPMENT_LANGUAGE)</string>
 	<key>CFBundleDisplayName</key>
