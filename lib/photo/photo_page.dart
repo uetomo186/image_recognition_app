@@ -16,7 +16,7 @@ class _PhotoPageState extends State<PhotoPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: Colors.red,
+        backgroundColor: Colors.blue,
         title: const Text('Photo Page'),
       ),
       // モデルクラスPhotoを使い画像を表示する
