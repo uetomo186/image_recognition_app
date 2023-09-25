@@ -26,6 +26,8 @@ dependencies:
   flutter_svg:
   file_picker:
   google_mlkit_face_detection:
+  http:
+  share_plus:
 
 dev_dependencies:
   flutter_test: 
