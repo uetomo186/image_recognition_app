@@ -22,12 +22,14 @@ dependencies:
   cupertino_icons: ^1.0.2
   firebase_core: 
   firebase_storage:
+  cloud_firestore:
   google_ml_kit:
   flutter_svg:
   file_picker:
   google_mlkit_face_detection:
   http:
   share_plus:
+
 
 dev_dependencies:
   flutter_test: 
