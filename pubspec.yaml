@@ -28,7 +28,10 @@ dependencies:
   file_picker:
   google_mlkit_face_detection:
   http:
+  camera:
   share_plus:
+  tflite_flutter: 
+  tflite_flutter_helper: 
 
 
 dev_dependencies:
