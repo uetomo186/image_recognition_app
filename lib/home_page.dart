@@ -3,6 +3,7 @@ import 'package:flutter_hooks/flutter_hooks.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:hooks_riverpod/hooks_riverpod.dart';
+import 'package:image_recognition_app/camera/camera_screen.dart';
 import 'package:image_recognition_app/photo/camera_view.dart';
 import 'package:image_recognition_app/photo/photo_page.dart';
 import 'package:image_recognition_app/photo/photo_upload_screen.dart';
@@ -86,7 +87,7 @@ class HomePage extends HookConsumerWidget {
               const Divider(height: 1),
               ListTile(
                 title: Text(
-                  'タイムラインのサンプル',
+                  'カメラスクリーン',
                   style:
                       TextStyle(color: Theme.of(context).colorScheme.primary),
                 ),
@@ -94,7 +95,10 @@ class HomePage extends HookConsumerWidget {
                   Icons.arrow_forward_ios_rounded,
                   size: 16,
                 ),
-                onTap: () {},
+                onTap: () {
+                  Navigator.push(context,
+                      MaterialPageRoute(builder: (context) => CameraScreen()));
+                },
               ),
               const Divider(height: 1),
             ],
