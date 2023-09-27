@@ -33,6 +33,7 @@ dependencies:
   share_plus:
   tflite_flutter: 
   tflite_flutter_helper: 
+  shared_preferences:
 
 
 dev_dependencies:
