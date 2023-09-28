@@ -27,6 +27,7 @@ dependencies:
   google_ml_kit:
   flutter_svg:
   file_picker:
+  photo_view:
   google_mlkit_face_detection:
   http:
   camera:
