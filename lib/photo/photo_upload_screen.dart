@@ -33,12 +33,17 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
     final pickedFiles = await picker.pickMultiImage();
 
     setState(() {
-      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+      if (pickedFiles.length <= 4) {
         _images = pickedFiles.map((file) => File(file.path)).toList();
+      } else if (pickedFiles.length > 4) {
+        _images = pickedFiles.take(4).map((file) => File(file.path)).toList();
+        debugPrint('最大4枚の画像を選択できます。最初の4枚のみが選択されました。');
       } else {
-        debugPrint('No images selected.');
+        debugPrint('画像が選択されていません');
       }
     });
+    //画像を選択したら顔検出を実行
+    detectedFaces = [];
   }
 
   Future<void> detectFaces() async {
@@ -46,26 +51,27 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
     final inputImage = InputImage.fromFilePath(_images[0].path);
     final faceDetector = GoogleMlKit.vision.faceDetector();
     final List<Face> faces = await faceDetector.processImage(inputImage);
-    for (Face face in faces) {
-      final Rect bounds = face.boundingBox;
-      // ここでboundsを使用して、顔の位置を取得したり、UI上で顔をハイライトしたりできます。
-    }
+    setState(() {
+      detectedFaces = faces;
+    });
     faceDetector.close();
   }
 
   Future uploadImageToFirebase(BuildContext context) async {
-    String fileName = DateTime.now().millisecondsSinceEpoch.toString();
-    _uploadedFileName = fileName;
-    FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child('uploads/$fileName');
-    UploadTask uploadTask = ref.putFile(_images[0]); // ここでは最初の画像をアップロードします。
-    await uploadTask.whenComplete(() async {
-      debugPrint('ファイルがアップロードされました');
-      String imageUrl = await ref.getDownloadURL();
-      dbRef.child('uploaded_images/$fileName').set(imageUrl);
-      ScaffoldMessenger.of(context)
-          .showSnackBar(const SnackBar(content: Text('ファイルをアップロードできました')));
-    });
+    for (var image in _images) {
+      String fileName = DateTime.now().millisecondsSinceEpoch.toString();
+      _uploadedFileName = fileName;
+      FirebaseStorage storage = FirebaseStorage.instance;
+      Reference ref = storage.ref().child('uploads/$fileName');
+      UploadTask uploadTask = ref.putFile(image); // 全ての画像をアップロードします。
+      await uploadTask.whenComplete(() async {
+        debugPrint('ファイルがアップロードされました');
+        String imageUrl = await ref.getDownloadURL();
+        dbRef.child('uploaded_images/$fileName').set(imageUrl);
+      });
+    }
+    ScaffoldMessenger.of(context)
+        .showSnackBar(const SnackBar(content: Text('全てのファイルをアップロードできました')));
   }
 
   Future fetchImagesFromDatabase() async {
@@ -118,26 +124,39 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
             children: <Widget>[
               _images.isEmpty
                   ? const Text('画像が選択されていません')
-                  : Image.file(_images[0]), // ここでは最初の画像を表示します。
+                  : Wrap(
+                      spacing: 8.0, // 画像の間にスペースを追加する場合
+                      children: _images.map((image) {
+                        return Container(
+                          width: 100.0,
+                          height: 100.0,
+                          decoration: BoxDecoration(
+                            image: DecorationImage(
+                              image: FileImage(image),
+                              fit: BoxFit.cover, // 画像をコンテナの大きさに合わせて調整します
+                            ),
+                            borderRadius:
+                                BorderRadius.circular(8.0), // 画像の角を丸める場合
+                          ),
+                        );
+                      }).toList()),
               ElevatedButton(
                 onPressed: getImage,
                 child: const Text('画像を選択'),
               ),
               ElevatedButton(
-                child: const Text('Firebaseにアップロードする'),
+                child: const Text('画像をアップロードする'),
                 onPressed: () => uploadImageToFirebase(context),
               ),
               ElevatedButton(
                 onPressed: fetchImagesFromDatabase,
-                child: const Text('Databaseから画像のURLを取得する'),
+                child: const Text('画像を取得する'),
               ),
               SizedBox(
                 height: 400,
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
                     crossAxisCount: 4,
-                    mainAxisSpacing: 8.0,
-                    crossAxisSpacing: 8.0,
                   ),
                   itemCount: _imageUrls.length,
                   itemBuilder: (BuildContext context, int index) {
