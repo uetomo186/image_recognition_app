@@ -1,9 +1,13 @@
+import 'dart:convert';
 import 'dart:io';
-import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
+import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:google_ml_kit/google_ml_kit.dart';
+import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -12,28 +16,40 @@ void main() async {
 }
 
 class ImageUploadScreen extends StatefulWidget {
-  const ImageUploadScreen({Key? key}) : super(key: key); // super.key を修正しました
+  const ImageUploadScreen({Key? key}) : super(key: key);
 
   @override
   ImageUploadScreenState createState() => ImageUploadScreenState();
 }
 
 class ImageUploadScreenState extends State<ImageUploadScreen> {
-  File? _image;
+  List<File> _images = [];
   final picker = ImagePicker();
-  String? _downloadedImageUrl;
   String? _uploadedFileName;
+  final dbRef = FirebaseDatabase.instance.ref();
 
-  Future getImage() async {
-    final pickedFile = await picker.pickImage(source: ImageSource.gallery);
+  Future<void> getImage() async {
+    final pickedFiles = await picker.pickMultiImage();
 
     setState(() {
-      if (pickedFile != null) {
-        _image = File(pickedFile.path);
+      if (pickedFiles != null && pickedFiles.isNotEmpty) {
+        _images = pickedFiles.map((file) => File(file.path)).toList();
       } else {
-        debugPrint('No image selected.');
+        debugPrint('No images selected.');
       }
     });
+  }
+
+  Future<void> detectFaces() async {
+    if (_images.isEmpty) return;
+    final inputImage = InputImage.fromFilePath(_images[0].path);
+    final faceDetector = GoogleMlKit.vision.faceDetector();
+    final List<Face> faces = await faceDetector.processImage(inputImage);
+    for (Face face in faces) {
+      final Rect bounds = face.boundingBox;
+      // ここでboundsを使用して、顔の位置を取得したり、UI上で顔をハイライトしたりできます。
+    }
+    faceDetector.close();
   }
 
   Future uploadImageToFirebase(BuildContext context) async {
@@ -41,46 +57,51 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
     _uploadedFileName = fileName;
     FirebaseStorage storage = FirebaseStorage.instance;
     Reference ref = storage.ref().child('uploads/$fileName');
-    UploadTask uploadTask = ref.putFile(_image!);
+    UploadTask uploadTask = ref.putFile(_images[0]); // ここでは最初の画像をアップロードします。
     await uploadTask.whenComplete(() async {
       debugPrint('ファイルがアップロードされました');
-
-      // URL を取得して Firestore に保存
       String imageUrl = await ref.getDownloadURL();
-      FirebaseFirestore.instance.collection('uploaded_images').add({
-        'url': imageUrl,
-        'timestamp': FieldValue.serverTimestamp(),
-      });
-
+      dbRef.child('uploaded_images/$fileName').set(imageUrl);
       ScaffoldMessenger.of(context)
           .showSnackBar(const SnackBar(content: Text('ファイルをアップロードできました')));
     });
   }
 
-  Future<String?> _getImageUrlFromFirebaseStorage(String fileName) async {
-    FirebaseStorage storage = FirebaseStorage.instance;
-    Reference ref = storage.ref().child('uploads/$fileName');
-    try {
-      return await ref.getDownloadURL();
-    } catch (e) {
-      debugPrint("画像の取得中にエラーが発生しました: $e");
-      return null;
+  Future fetchImagesFromDatabase() async {
+    DatabaseEvent event = await dbRef.child('uploaded_images').once();
+    DataSnapshot snapshot = event.snapshot;
+
+    if (snapshot.value != null) {
+      Map<String, String> imagesMap =
+          Map<String, String>.from(snapshot.value as Map);
+      List<String> urls = List<String>.from(imagesMap.values);
+      setState(() {
+        _imageUrls = urls;
+      });
+      saveImageUrlsToPrefs();
     }
   }
 
   List<String> _imageUrls = [];
 
-  Future fetchImagesFromFirestore() async {
-    QuerySnapshot snapshot = await FirebaseFirestore.instance
-        .collection('uploaded_images')
-        .orderBy('timestamp', descending: true)
-        .get();
+  Future<void> saveImageUrlsToPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    prefs.setString('imageUrls', jsonEncode(_imageUrls));
+  }
 
-    List<String> urls =
-        snapshot.docs.map((doc) => doc['url'] as String).toList();
-    setState(() {
-      _imageUrls = urls;
-    });
+  Future<void> loadImageUrlsFromPrefs() async {
+    final prefs = await SharedPreferences.getInstance();
+    final jsonString = prefs.getString('imageUrls');
+    if (jsonString != null) {
+      _imageUrls = List<String>.from(jsonDecode(jsonString));
+      setState(() {});
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    loadImageUrlsFromPrefs();
   }
 
   @override
@@ -94,7 +115,9 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: <Widget>[
-              _image == null ? const Text('画像が選択されていません') : Image.file(_image!),
+              _images.isEmpty
+                  ? const Text('画像が選択されていません')
+                  : Image.file(_images[0]), // ここでは最初の画像を表示します。
               ElevatedButton(
                 onPressed: getImage,
                 child: const Text('画像を選択'),
@@ -104,28 +127,14 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
                 onPressed: () => uploadImageToFirebase(context),
               ),
               ElevatedButton(
-                onPressed: () async {
-                  if (_uploadedFileName != null) {
-                    String? imageUrl = await _getImageUrlFromFirebaseStorage(
-                        _uploadedFileName!);
-                    setState(() {
-                      _downloadedImageUrl = imageUrl;
-                    });
-                  } else {
-                    debugPrint('アップロードされたファイルがまだありません');
-                  }
-                },
-                child: const Text('Firebaseから画像を取得する'),
+                onPressed: fetchImagesFromDatabase,
+                child: const Text('Databaseから画像のURLを取得する'),
               ),
-              if (_downloadedImageUrl != null)
-                Image.network(_downloadedImageUrl!)
-              else
-                const Text('画像がまだありません'),
               SizedBox(
-                height: 300, // ここで適切な高さを設定します。
+                height: 400,
                 child: GridView.builder(
                   gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-                    crossAxisCount: 3,
+                    crossAxisCount: 4,
                     mainAxisSpacing: 8.0,
                     crossAxisSpacing: 8.0,
                   ),
