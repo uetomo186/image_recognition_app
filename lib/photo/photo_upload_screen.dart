@@ -7,6 +7,8 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:photo_view/photo_view.dart';
+import 'package:photo_view/photo_view_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -31,7 +33,8 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
 
   Future<void> getImage() async {
     final pickedFiles = await picker.pickMultiImage();
-
+    // 画像を選択したら顔検出を実行
+    await detectFaces();
     setState(() {
       if (pickedFiles.length <= 4) {
         _images = pickedFiles.map((file) => File(file.path)).toList();
@@ -42,8 +45,6 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
         debugPrint('画像が選択されていません');
       }
     });
-    //画像を選択したら顔検出を実行
-    detectedFaces = [];
   }
 
   Future<void> detectFaces() async {
@@ -160,10 +161,19 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
                   ),
                   itemCount: _imageUrls.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return Image.network(_imageUrls[index]);
+                    return PhotoView(
+                      imageProvider: NetworkImage(_imageUrls[index]),
+                      minScale: PhotoViewComputedScale.contained,
+                      maxScale: PhotoViewComputedScale.covered * 2,
+                      backgroundDecoration: BoxDecoration(
+                        color: Colors.transparent,
+                      ),
+                      heroAttributes:
+                          PhotoViewHeroAttributes(tag: 'image$index'),
+                    );
                   },
                 ),
-              ),
+              )
             ],
           ),
         ),
