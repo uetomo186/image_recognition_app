@@ -26,6 +26,7 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
   List<File> _images = [];
   final picker = ImagePicker();
   String? _uploadedFileName;
+  List<Face> detectedFaces = [];
   final dbRef = FirebaseDatabase.instance.ref();
 
   Future<void> getImage() async {
@@ -149,5 +150,25 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildFaceHighlights() {
+    // この例では、顔の周りに矩形を表示します。実際には、検出された顔の情報に基づいてカスタマイズすることができます。
+    return detectedFaces.map((face) {
+      return Positioned(
+        left: face.boundingBox.left,
+        top: face.boundingBox.top,
+        child: Container(
+          width: face.boundingBox.width,
+          height: face.boundingBox.height,
+          decoration: BoxDecoration(
+            border: Border.all(
+              color: Colors.red,
+              width: 2.0,
+            ),
+          ),
+        ),
+      );
+    }).toList();
   }
 }
