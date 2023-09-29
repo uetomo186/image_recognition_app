@@ -28,13 +28,14 @@ dependencies:
   flutter_svg:
   file_picker:
   photo_view:
-  google_mlkit_face_detection:
+  google_mlkit_face_detection: ^0.8.0
   http:
   camera:
   share_plus:
   tflite_flutter: 
   tflite_flutter_helper: 
   shared_preferences:
+  google_mlkit_image_labeling: ^0.9.0
 
 
 dev_dependencies:
