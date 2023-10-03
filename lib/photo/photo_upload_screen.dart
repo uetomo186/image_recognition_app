@@ -4,11 +4,11 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
+import 'package:http/http.dart' as http;
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image_picker/image_picker.dart';
 import 'package:photo_view/photo_view.dart';
-import 'package:photo_view/photo_view_gallery.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -126,21 +126,26 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
               _images.isEmpty
                   ? const Text('画像が選択されていません')
                   : Wrap(
-                      spacing: 8.0, // 画像の間にスペースを追加する場合
+                      spacing: 8.0,
                       children: _images.map((image) {
-                        return Container(
-                          width: 100.0,
-                          height: 100.0,
-                          decoration: BoxDecoration(
-                            image: DecorationImage(
-                              image: FileImage(image),
-                              fit: BoxFit.cover, // 画像をコンテナの大きさに合わせて調整します
+                        return Stack(
+                          children: [
+                            Container(
+                              width: 100.0,
+                              height: 100.0,
+                              decoration: BoxDecoration(
+                                image: DecorationImage(
+                                  image: FileImage(image),
+                                  fit: BoxFit.cover,
+                                ),
+                                borderRadius: BorderRadius.circular(8.0),
+                              ),
                             ),
-                            borderRadius:
-                                BorderRadius.circular(8.0), // 画像の角を丸める場合
-                          ),
+                            ..._buildFaceHighlights(), // こちらで顔のハイライトを追加します
+                          ],
                         );
-                      }).toList()),
+                      }).toList(),
+                    ),
               ElevatedButton(
                 onPressed: getImage,
                 child: const Text('画像を選択'),
@@ -181,23 +186,74 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
     );
   }
 
+// 顔をハイライト表示するウィジェットのメソッド
   List<Widget> _buildFaceHighlights() {
-    // この例では、顔の周りに矩形を表示します。実際には、検出された顔の情報に基づいてカスタマイズすることができます。
     return detectedFaces.map((face) {
-      return Positioned(
-        left: face.boundingBox.left,
-        top: face.boundingBox.top,
-        child: Container(
-          width: face.boundingBox.width,
-          height: face.boundingBox.height,
-          decoration: BoxDecoration(
-            border: Border.all(
-              color: Colors.red,
-              width: 2.0,
-            ),
-          ),
-        ),
+      return GestureDetector(
+        onTap: () async {
+          // ダイアログを表示し、ユーザーに名前を入力させる
+          final enteredName = await showDialog<String>(
+            context: context,
+            builder: (BuildContext context) {
+              String tempName = '';
+              return AlertDialog(
+                title: Text('名前を入力してください'),
+                content: TextField(
+                  onChanged: (value) => tempName = value,
+                ),
+                actions: [
+                  ElevatedButton(
+                    child: Text('確定'),
+                    onPressed: () => Navigator.of(context).pop(tempName),
+                  ),
+                  ElevatedButton(
+                    child: Text('キャンセル'),
+                    onPressed: () => Navigator.of(context).pop(),
+                  ),
+                ],
+              );
+            },
+          );
+
+          if (enteredName != null && enteredName.isNotEmpty) {
+            // 名前と顔の情報を関連付ける処理
+            associateNameWithFace(enteredName, face);
+          }
+        },
       );
     }).toList();
   }
+
+  // 名前と顔の情報を関連付ける処理
+  void associateNameWithFace(String name, Face face) {
+    // このメソッド内で、名前と顔の情報（特徴量やIDなど）を関連付けて保存する処理を実装します。
+    // 例: データベースやSharedPreferencesを使用するなど。
+  }
 }
+
+// Future<List<Face>> detectFacesFromUrl(String imageUrl) async {
+//   // 1. http パッケージを使用して画像データを取得
+//   final response = await http.get(Uri.parse(imageUrl));
+
+//   if (response.statusCode != 200) {
+//     throw Exception('Failed to load image');
+//   }
+
+//   final bytes = response.bodyBytes;
+
+//   // 2. & 3. 適切なパラメータ名と定数名を使用
+//   final inputImage = InputImage.fromBytes(
+//     bytes: bytes,
+//     metadata: InputImageData(
+//       rotation: InputImageRotation.Rotation_0deg,
+//       format: InputImageFormat.fromRawValue(0),
+//       size: Size(0, 0),
+//       planeData: [],
+//     ),
+//   );
+
+//   final faceDetector = GoogleMlKit.vision.faceDetector();
+//   final List<Face> faces = await faceDetector.processImage(inputImage);
+//   faceDetector.close();
+//   return faces;
+// }
