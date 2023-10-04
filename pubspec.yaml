@@ -35,6 +35,7 @@ dependencies:
   tflite_flutter: 
   tflite_flutter_helper: 
   shared_preferences:
+  tflite:
   google_mlkit_image_labeling: ^0.9.0
 
 
