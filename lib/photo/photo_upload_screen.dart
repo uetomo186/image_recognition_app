@@ -4,11 +4,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
 import 'package:flutter/material.dart';
-import 'package:http/http.dart' as http;
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:photo_view/photo_view.dart';
+import 'package:image_recognition_app/widget/image_zoom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 void main() async {
@@ -166,15 +165,18 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
                   ),
                   itemCount: _imageUrls.length,
                   itemBuilder: (BuildContext context, int index) {
-                    return PhotoView(
-                      imageProvider: NetworkImage(_imageUrls[index]),
-                      minScale: PhotoViewComputedScale.contained,
-                      maxScale: PhotoViewComputedScale.covered * 2,
-                      backgroundDecoration: BoxDecoration(
-                        color: Colors.transparent,
-                      ),
-                      heroAttributes:
-                          PhotoViewHeroAttributes(tag: 'image$index'),
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) =>
+                                ImageZoomScreen(imageUrl: _imageUrls[index]),
+                          ),
+                        );
+                      },
+                      child:
+                          Image.network(_imageUrls[index], fit: BoxFit.cover),
                     );
                   },
                 ),
@@ -197,17 +199,17 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
             builder: (BuildContext context) {
               String tempName = '';
               return AlertDialog(
-                title: Text('名前を入力してください'),
+                title: const Text('名前を入力してください'),
                 content: TextField(
                   onChanged: (value) => tempName = value,
                 ),
                 actions: [
                   ElevatedButton(
-                    child: Text('確定'),
+                    child: const Text('確定'),
                     onPressed: () => Navigator.of(context).pop(tempName),
                   ),
                   ElevatedButton(
-                    child: Text('キャンセル'),
+                    child: const Text('キャンセル'),
                     onPressed: () => Navigator.of(context).pop(),
                   ),
                 ],
@@ -230,30 +232,3 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
     // 例: データベースやSharedPreferencesを使用するなど。
   }
 }
-
-// Future<List<Face>> detectFacesFromUrl(String imageUrl) async {
-//   // 1. http パッケージを使用して画像データを取得
-//   final response = await http.get(Uri.parse(imageUrl));
-
-//   if (response.statusCode != 200) {
-//     throw Exception('Failed to load image');
-//   }
-
-//   final bytes = response.bodyBytes;
-
-//   // 2. & 3. 適切なパラメータ名と定数名を使用
-//   final inputImage = InputImage.fromBytes(
-//     bytes: bytes,
-//     metadata: InputImageData(
-//       rotation: InputImageRotation.Rotation_0deg,
-//       format: InputImageFormat.fromRawValue(0),
-//       size: Size(0, 0),
-//       planeData: [],
-//     ),
-//   );
-
-//   final faceDetector = GoogleMlKit.vision.faceDetector();
-//   final List<Face> faces = await faceDetector.processImage(inputImage);
-//   faceDetector.close();
-//   return faces;
-// }
