@@ -1,5 +1,7 @@
 import 'dart:convert';
+import 'dart:ffi';
 import 'dart:io';
+import 'dart:typed_data';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_storage/firebase_storage.dart';
 import 'package:firebase_database/firebase_database.dart';
@@ -7,6 +9,7 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image_picker/image_picker.dart';
+import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image_recognition_app/widget/image_zoom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -170,8 +173,7 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) =>
-                                ImageZoomScreen(imageUrl: _imageUrls[index]),
+                            builder: (context) => const ImageUploadScreen(),
                           ),
                         );
                       },
@@ -230,5 +232,46 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
   void associateNameWithFace(String name, Face face) {
     // このメソッド内で、名前と顔の情報（特徴量やIDなど）を関連付けて保存する処理を実装します。
     // 例: データベースやSharedPreferencesを使用するなど。
+  }
+}
+
+Future<Uint8List?> downloadImageFromFirebase(String filePath) async {
+  FirebaseStorage storage = FirebaseStorage.instance;
+  Reference ref = storage.ref(filePath);
+  try {
+    final data = await ref.getData();
+    return data;
+  } catch (e) {
+    print('Error downloading image from Firebase: $e');
+    return null;
+  }
+}
+
+Future<List?> applyModelOnImage(Uint8List imageData) async {
+  const outputSize = 100; // 例としての値。実際のモデルの出力サイズに応じて変更する必要があります。
+
+  // 画像データの前処理（例としての単純化、実際にはモデルの要件に合わせて調整する必要があります）
+  // ...
+
+  // tflite_flutterを使用してモデルに画像データを適用
+  try {
+    final interpreter = await Interpreter.fromAsset('your_model.tflite');
+    var output = List<double>.filled(outputSize, 0);
+    interpreter.run(imageData, output);
+    return output;
+  } catch (e) {
+    debugPrint('Error running TFLite model: $e');
+    return null;
+  }
+}
+
+void processImageFromFirebase(String filePath) async {
+  final imageData = await downloadImageFromFirebase(filePath);
+  if (imageData != null) {
+    final predictions = await applyModelOnImage(imageData);
+    if (predictions != null) {
+      // predictionsを使用して必要な処理を行う
+      // ...
+    }
   }
 }
