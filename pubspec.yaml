@@ -31,12 +31,13 @@ dependencies:
   google_mlkit_face_detection: ^0.8.0
   http:
   camera:
+  photo_manager:
   share_plus:
   tflite_flutter: 
   tflite_flutter_helper: 
   shared_preferences:
-  tflite:
   google_mlkit_image_labeling: ^0.9.0
+  image:
 
 
 dev_dependencies:
