@@ -173,7 +173,8 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
                         Navigator.push(
                           context,
                           MaterialPageRoute(
-                            builder: (context) => const ImageUploadScreen(),
+                            builder: (context) => FaceRecognitionScreen(
+                                imageUrl: _imageUrls[index]),
                           ),
                         );
                       },
