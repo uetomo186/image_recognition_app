@@ -1,31 +1,71 @@
+import 'dart:typed_data';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
-import 'package:photo_view/photo_view.dart';
+import 'package:http/http.dart' as http;
+import 'package:tflite_flutter/tflite_flutter.dart';
+import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
-class ImageZoomScreen extends StatefulWidget {
+class FaceRecognitionScreen extends StatefulWidget {
   final String imageUrl;
 
-  const ImageZoomScreen({super.key, required this.imageUrl});
+  const FaceRecognitionScreen({Key? key, required this.imageUrl})
+      : super(key: key);
 
   @override
-  State<ImageZoomScreen> createState() => _ImageZoomScreenState();
+  _FaceRecognitionScreenState createState() => _FaceRecognitionScreenState();
 }
 
-class _ImageZoomScreenState extends State<ImageZoomScreen> {
+class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
+  String? _result;
+  Uint8List? _imageData;
+
+  @override
+  void initState() {
+    super.initState();
+    _analyzeImage(widget.imageUrl); // 画像解析を初期化時に実行
+  }
+
+  Future<Uint8List?> _downloadImage(String imageUrl) async {
+    try {
+      final response = await http.get(Uri.parse(imageUrl));
+      if (response.statusCode == 200) {
+        _imageData = response.bodyBytes;
+        return response.bodyBytes;
+      } else {
+        debugPrint('Firebaseから画像をロードできませんでした');
+        return null;
+      }
+    } catch (e) {
+      debugPrint('エラー: $e');
+      return null;
+    }
+  }
+
+  Future<void> _analyzeImage(String imageUrl) async {
+    final imageBytes = await _downloadImage(imageUrl);
+    if (imageBytes == null) return;
+    final image = img.decodeImage(imageBytes);
+
+    final output =
+        List.filled(1, Float32List(5 * 1 * 1 * 128), growable: false);
+    setState(() {
+      _result = output.toString();
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Zoom Image'),
-      ),
-      body: Center(
-        child: PhotoView(
-          imageProvider: NetworkImage(widget.imageUrl),
-          minScale: PhotoViewComputedScale.contained,
-          maxScale: PhotoViewComputedScale.covered * 2,
-          backgroundDecoration: const BoxDecoration(
-            color: Colors.transparent,
-          ),
-        ),
+      appBar: AppBar(title: const Text('Face Recognition')),
+      body: ListView(
+        children: [
+          if (_imageData != null)
+            Image.memory(_imageData!)
+          else
+            const Center(child: CircularProgressIndicator()),
+          if (_result != null) Text('Result: $_result'),
+        ],
       ),
     );
   }
