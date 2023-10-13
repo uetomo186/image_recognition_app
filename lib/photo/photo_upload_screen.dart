@@ -9,7 +9,6 @@ import 'package:flutter/material.dart';
 import 'package:google_ml_kit/google_ml_kit.dart';
 import 'package:google_mlkit_face_detection/google_mlkit_face_detection.dart';
 import 'package:image_picker/image_picker.dart';
-import 'package:tflite_flutter/tflite_flutter.dart';
 import 'package:image_recognition_app/widget/image_zoom.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -248,31 +247,31 @@ Future<Uint8List?> downloadImageFromFirebase(String filePath) async {
   }
 }
 
-Future<List?> applyModelOnImage(Uint8List imageData) async {
-  const outputSize = 100; // 例としての値。実際のモデルの出力サイズに応じて変更する必要があります。
+// Future<List?> applyModelOnImage(Uint8List imageData) async {
+//   const outputSize = 100; // 例としての値。実際のモデルの出力サイズに応じて変更する必要があります。
 
-  // 画像データの前処理（例としての単純化、実際にはモデルの要件に合わせて調整する必要があります）
-  // ...
+//   // 画像データの前処理（例としての単純化、実際にはモデルの要件に合わせて調整する必要があります）
+//   // ...
 
-  // tflite_flutterを使用してモデルに画像データを適用
-  try {
-    final interpreter = await Interpreter.fromAsset('your_model.tflite');
-    var output = List<double>.filled(outputSize, 0);
-    interpreter.run(imageData, output);
-    return output;
-  } catch (e) {
-    debugPrint('Error running TFLite model: $e');
-    return null;
-  }
-}
+//   // tflite_flutterを使用してモデルに画像データを適用
+//   try {
+//     final interpreter = await Interpreter.fromAsset('your_model.tflite');
+//     var output = List<double>.filled(outputSize, 0);
+//     interpreter.run(imageData, output);
+//     return output;
+//   } catch (e) {
+//     debugPrint('Error running TFLite model: $e');
+//     return null;
+//   }
+// }
 
-void processImageFromFirebase(String filePath) async {
-  final imageData = await downloadImageFromFirebase(filePath);
-  if (imageData != null) {
-    final predictions = await applyModelOnImage(imageData);
-    if (predictions != null) {
-      // predictionsを使用して必要な処理を行う
-      // ...
-    }
-  }
-}
+// void processImageFromFirebase(String filePath) async {
+//   final imageData = await downloadImageFromFirebase(filePath);
+//   if (imageData != null) {
+//     final predictions = await applyModelOnImage(imageData);
+//     if (predictions != null) {
+//       // predictionsを使用して必要な処理を行う
+//       // ...
+//     }
+//   }
+// }
