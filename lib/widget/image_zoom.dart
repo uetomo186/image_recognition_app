@@ -3,8 +3,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
-import 'package:tflite_flutter/tflite_flutter.dart';
-import 'package:tflite_flutter_helper/tflite_flutter_helper.dart';
 
 class FaceRecognitionScreen extends StatefulWidget {
   final String imageUrl;
