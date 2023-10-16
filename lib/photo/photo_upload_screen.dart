@@ -235,6 +235,7 @@ class ImageUploadScreenState extends State<ImageUploadScreen> {
   }
 }
 
+// Firebaseから画像を取得するメソッド
 Future<Uint8List?> downloadImageFromFirebase(String filePath) async {
   FirebaseStorage storage = FirebaseStorage.instance;
   Reference ref = storage.ref(filePath);
@@ -242,36 +243,7 @@ Future<Uint8List?> downloadImageFromFirebase(String filePath) async {
     final data = await ref.getData();
     return data;
   } catch (e) {
-    print('Error downloading image from Firebase: $e');
+    debugPrint('Error downloading image from Firebase: $e');
     return null;
   }
 }
-
-// Future<List?> applyModelOnImage(Uint8List imageData) async {
-//   const outputSize = 100; // 例としての値。実際のモデルの出力サイズに応じて変更する必要があります。
-
-//   // 画像データの前処理（例としての単純化、実際にはモデルの要件に合わせて調整する必要があります）
-//   // ...
-
-//   // tflite_flutterを使用してモデルに画像データを適用
-//   try {
-//     final interpreter = await Interpreter.fromAsset('your_model.tflite');
-//     var output = List<double>.filled(outputSize, 0);
-//     interpreter.run(imageData, output);
-//     return output;
-//   } catch (e) {
-//     debugPrint('Error running TFLite model: $e');
-//     return null;
-//   }
-// }
-
-// void processImageFromFirebase(String filePath) async {
-//   final imageData = await downloadImageFromFirebase(filePath);
-//   if (imageData != null) {
-//     final predictions = await applyModelOnImage(imageData);
-//     if (predictions != null) {
-//       // predictionsを使用して必要な処理を行う
-//       // ...
-//     }
-//   }
-// }
