@@ -24,6 +24,7 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
     _analyzeImage(widget.imageUrl); // 画像解析を初期化時に実行
   }
 
+  //Firebaseから画像をダウンロードする
   Future<Uint8List?> _downloadImage(String imageUrl) async {
     try {
       final response = await http.get(Uri.parse(imageUrl));
