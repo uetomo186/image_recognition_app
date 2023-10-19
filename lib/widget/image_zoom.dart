@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:image/image.dart' as img;
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
+import 'dart:convert';
 
 class FaceRecognitionScreen extends StatefulWidget {
   final String imageUrl;
@@ -51,6 +52,39 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
     setState(() {
       _result = output.toString();
     });
+  }
+
+// Cloud Vision APIを呼び出す関数
+  Future<dynamic> analyzeImageWithVisionAPI(String imageUrl) async {
+    const apiKey = 'AIzaSyArSPCjOXxLBQB7I4cm0eQ7RPrzM_vPjEA';
+    const visionApiUrl =
+        'https://vision.googleapis.com/v1/images:annotate?key=$apiKey';
+
+    final body = {
+      "requests": [
+        {
+          "image": {
+            "source": {"imageUri": imageUrl}
+          },
+          "features": [
+            {"type": "LABEL_DETECTION", "maxResults": 10}
+          ]
+        }
+      ]
+    };
+
+    final response = await http.post(
+      Uri.parse(visionApiUrl),
+      headers: {'Content-Type': 'application/json'},
+      body: jsonEncode(body),
+    );
+
+    if (response.statusCode == 200) {
+      return jsonDecode(response.body);
+    } else {
+      print('Cloud Vision API Error: ${response.body}');
+      return null;
+    }
   }
 
   @override
