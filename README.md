@@ -4,13 +4,9 @@ A new Flutter project.
 
 ## Getting Started
 
-This project is a starting point for a Flutter application.
+## 顔認証機能アプリまとめ
 
-A few resources to get you started if this is your first Flutter project:
+写真のアルバム機能を実装する場合は、Firebase Storage を使用して画像の共有を行う。
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
-
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+- カメラ機能を実装するために参考にした記事
+  https://zenn.dev/mamushi/articles/flutter_camera
