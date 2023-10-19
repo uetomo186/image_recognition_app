@@ -10,3 +10,9 @@ A new Flutter project.
 
 - カメラ機能を実装するために参考にした記事
   https://zenn.dev/mamushi/articles/flutter_camera
+
+- Teachable Machine と連携して画像の識別の実施することも可能
+  https://teachablemachine.withgoogle.com/
+
+- ネイティブで顔の識別を実装している参考記事
+  https://techblog.timers-inc.com/entry/2020/04/24/143803
