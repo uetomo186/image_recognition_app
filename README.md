@@ -1,5 +1,3 @@
-<img width="896" alt="スクリーンショット 2023-10-20 18 37 04" src="https://github.com/uehoho18/image_recognition_app/assets/57786349/a5bdadb7-cb30-43b4-97fc-3dc75c184680"># image_recognition_app
-
 ## 顔認証機能アプリまとめ
 
 写真のアルバム機能を実装する場合は、Firebase Storage を使用して画像を投稿できるように実装していく。
