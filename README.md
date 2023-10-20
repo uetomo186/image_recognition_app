@@ -51,8 +51,6 @@ https://developers.google.com/ml-kit/vision/face-detection?hl=ja
   以下参考記事
   https://developers.google.com/ml-kit/vision/face-detection?hl=ja
 
-### 顔検出 API を作成することによりできること
-
 ### 家族アプリ Famm は FirebaeML Kit を使用して実装していたが、現在は非推奨になっているおり、使用できなくなっている
 
 Firebase ML の AutoML Vision Edge 機能は非推奨になりました。Vertex AI を使用して ML モデルを自動でトレーニングすることを検討してください。この ML モデルは、TensorFlow Lite モデルとしてエクスポートしてデバイス上で使用することもでき、クラウドベースの推論用としてデプロイすることもできる。
