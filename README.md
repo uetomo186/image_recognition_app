@@ -20,6 +20,7 @@ Firebase Storage に画像を顔認識で読み込む処理が必要かと考え
 
 https://developers.google.com/ml-kit/vision/face-detection?hl=ja
 
+
 ## flutter の ML Kit で顔認証について可能なこと
 
 - 顔の検出:
@@ -41,6 +42,7 @@ https://developers.google.com/ml-kit/vision/face-detection?hl=ja
 - 複数の顔の検出:
   一つの写真や動画フレーム内に存在する複数の顔を検出することができます。
   → こちらの機能を使用することにより、顔認識のツールが作成できそうです。
+  
 
 ## Flutter だけで顔認証アプリが実装できない理由
 
@@ -50,10 +52,12 @@ https://developers.google.com/ml-kit/vision/face-detection?hl=ja
 - そのため、Flutter で顔認証アプリを実装する場合は、ネイティブのコードを修正して実装する必要があると考えられます。
   以下参考記事
   https://developers.google.com/ml-kit/vision/face-detection?hl=ja
+  
 
 ## 家族アプリ Famm は FirebaeML Kit を使用して実装していたが、現在は非推奨になっているおり、使用できなくなっている
 
 Firebase ML の AutoML Vision Edge 機能は非推奨になりました。Vertex AI を使用して ML モデルを自動でトレーニングすることを検討してください。この ML モデルは、TensorFlow Lite モデルとしてエクスポートしてデバイス上で使用することもでき、クラウドベースの推論用としてデプロイすることもできる。
+
 
 ## 顔検出のモデルには Google Cloud Vision AI API を使用する
 
