@@ -56,7 +56,7 @@ class _FaceRecognitionScreenState extends State<FaceRecognitionScreen> {
 
 // Cloud Vision APIを呼び出す関数
   Future<dynamic> analyzeImageWithVisionAPI(String imageUrl) async {
-    const apiKey = 'AIzaSyArSPCjOXxLBQB7I4cm0eQ7RPrzM_vPjEA';
+    const apiKey = '';
     const visionApiUrl =
         'https://vision.googleapis.com/v1/images:annotate?key=$apiKey';
 

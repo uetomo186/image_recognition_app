@@ -50,7 +50,7 @@ class DefaultFirebaseOptions {
   }
 
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA7kzO4q_apL-CDKAyGR9bZqg6ZAPDHZSY',
+    apiKey: '',
     appId: '1:818416764795:android:98885883860b619fdd9fde',
     messagingSenderId: '818416764795',
     projectId: 'image-recognition-app-72e39',
@@ -58,7 +58,7 @@ class DefaultFirebaseOptions {
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyArSPCjOXxLBQB7I4cm0eQ7RPrzM_vPjEA',
+    apiKey: '',
     appId: '1:818416764795:ios:f801f6c96cbcbfbadd9fde',
     messagingSenderId: '818416764795',
     projectId: 'image-recognition-app-72e39',
