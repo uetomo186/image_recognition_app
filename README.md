@@ -72,3 +72,5 @@ Firebase ML の AutoML Vision Edge 機能は非推奨になりました。Vertex
 - 試せなかったのですが、機械学習モデルについてはこちらのドキュメントである程度は画像の機械学習ができそうかと思います。
   https://cloud.google.com/vision/automl/docs/create-datasets?hl=ja
   https://cloud.google.com/vision/?hl=ja&_ga=2.231762909.-31886449.1695347274
+
+  
