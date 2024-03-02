@@ -42,7 +42,7 @@ https://developers.google.com/ml-kit/vision/face-detection?hl=ja
   → こちらの機能を使用することにより、顔認識のツールが作成できそうです。
   
 
-## Flutter だけで顔認証アプリが実装できない理由
+## Flutter 
 
 - Flutter だけで顔認証アプリを完全に実装することは難しいかもしれません。
   そもそも公式で Flutter 独自の API が用意されていないためです。
